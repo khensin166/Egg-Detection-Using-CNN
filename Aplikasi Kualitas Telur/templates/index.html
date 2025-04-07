@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aplikasi Pengecekan Telur</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary-color: #f5e8c7;
+        --secondary-color: #deb887;
+        --dark-color: #6b4226;
+        --light-color: #fffbf2;
+        --accent-color: #c19a6b;
+        --border-radius: 12px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: var(--light-color);
+        color: var(--dark-color);
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding: 20px;
+        background-color: var(--primary-color);
+        border-radius: var(--border-radius);
+        box-shadow: 0 4px 12px rgba(107, 66, 38, 0.1);
+      }
+
+      h1 {
+        color: var(--dark-color);
+        margin-bottom: 10px;
+      }
+
+      .subtitle {
+        color: var(--accent-color);
+        font-size: 1.2rem;
+      }
+
+      .main-content {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px;
+        margin-bottom: 30px;
+      }
+
+      .upload-section {
+        flex: 1;
+        min-width: 300px;
+        background-color: var(--primary-color);
+        padding: 25px;
+        border-radius: var(--border-radius);
+        box-shadow: 0 4px 12px rgba(107, 66, 38, 0.1);
+      }
+
+      .results-section {
+        flex: 1;
+        min-width: 300px;
+        background-color: var(--primary-color);
+        padding: 25px;
+        border-radius: var(--border-radius);
+        box-shadow: 0 4px 12px rgba(107, 66, 38, 0.1);
+      }
+
+      h2 {
+        margin-bottom: 20px;
+        color: var(--dark-color);
+        font-size: 1.5rem;
+        border-bottom: 2px solid var(--secondary-color);
+        padding-bottom: 10px;
+      }
+
+      .upload-area {
+        border: 3px dashed var(--accent-color);
+        border-radius: var(--border-radius);
+        padding: 40px 20px;
+        text-align: center;
+        cursor: pointer;
+        background-color: var(--light-color);
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+        position: relative;
+        min-height: 250px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+      }
+
+      .upload-area:hover {
+        background-color: #fff;
+        border-color: var(--dark-color);
+      }
+
+      .upload-icon {
+        font-size: 60px;
+        color: var(--accent-color);
+        margin-bottom: 15px;
+      }
+
+      .upload-text {
+        color: var(--dark-color);
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+      }
+
+      .upload-hint {
+        color: var(--accent-color);
+        font-size: 0.9rem;
+      }
+
+      #file-input {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      .preview-image {
+        max-width: 100%;
+        max-height: 200px;
+        border-radius: 8px;
+        margin-top: 15px;
+        display: none;
+      }
+
+      .submit-btn {
+        background-color: var(--dark-color);
+        color: var(--light-color);
+        border: none;
+        padding: 12px 20px;
+        width: 100%;
+        border-radius: var(--border-radius);
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .submit-btn:hover {
+        background-color: var(--accent-color);
+        transform: translateY(-2px);
+      }
+
+      .submit-btn:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+
+      .result-card {
+        background-color: var(--light-color);
+        border-radius: var(--border-radius);
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+
+      .result-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+      }
+
+      .result-table th,
+      .result-table td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid var(--secondary-color);
+      }
+
+      .result-table th {
+        background-color: var(--secondary-color);
+        color: var(--light-color);
+      }
+
+      .result-table tr:last-child td {
+        border-bottom: none;
+      }
+
+      .status {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-weight: bold;
+      }
+
+      .status.fertile {
+        background-color: #d4edda;
+        color: #155724;
+      }
+
+      .status.infertile {
+        background-color: #fff3cd;
+        color: #856404;
+      }
+
+      .status.dead {
+        background-color: #f8d7da;
+        color: #721c24;
+      }
+
+      .image-comparison {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+      }
+
+      .image-container {
+        flex: 1;
+        text-align: center;
+        padding: 10px;
+      }
+
+      .image-container img {
+        max-width: 100%;
+        height: 150px;
+        border-radius: 8px;
+        border: 2px solid var(--secondary-color);
+      }
+
+      .image-label {
+        margin-top: 8px;
+        font-size: 0.9rem;
+        color: var(--dark-color);
+      }
+
+      .info-section {
+        background-color: var(--primary-color);
+        padding: 25px;
+        border-radius: var(--border-radius);
+        margin-top: 30px;
+        box-shadow: 0 4px 12px rgba(107, 66, 38, 0.1);
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+      }
+
+      .info-card {
+        background-color: var(--light-color);
+        padding: 20px;
+        border-radius: var(--border-radius);
+        box-shadow: 0 2px 5px rgba(107, 66, 38, 0.1);
+      }
+
+      .info-card h3 {
+        color: var(--accent-color);
+        margin-bottom: 10px;
+        font-size: 1.2rem;
+        border-bottom: 1px solid var(--secondary-color);
+        padding-bottom: 8px;
+      }
+
+      .info-card p {
+        font-size: 0.95rem;
+        line-height: 1.5;
+        color: var(--dark-color);
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 768px) {
+        .main-content {
+          flex-direction: column;
+        }
+
+        .image-comparison {
+          flex-direction: column;
+        }
+
+        .image-container {
+          margin-bottom: 15px;
+        }
+      }
+
+      footer {
+        text-align: center;
+        margin-top: 30px;
+        padding: 20px;
+        background-color: var(--secondary-color);
+        color: var(--light-color);
+        border-radius: var(--border-radius);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Aplikasi Pengecekan Kualitas Telur</h1>
+        <p class="subtitle">
+          Deteksi Telur Fertile, Infertile, dan Dead Kelompok 20 Certan
+        </p>
+      </header>
+
+      <div class="main-content">
+        <div class="upload-section">
+          <h2>Upload Gambar Telur</h2>
+          <form
+            id="upload-form"
+            action="/predict"
+            method="post"
+            enctype="multipart/form-data"
+          >
+            <div class="upload-area" id="upload-area">
+              <i class="fas fa-cloud-upload-alt upload-icon"></i>
+              <p class="upload-text">Drag & drop gambar telur di sini</p>
+              <p class="upload-hint">atau klik untuk memilih file</p>
+              <input
+                type="file"
+                id="file-input"
+                name="file"
+                accept="image/*"
+                required
+              />
+              <img
+                id="preview-image"
+                class="preview-image"
+                src=""
+                alt="Preview"
+              />
+            </div>
+            <button type="submit" class="submit-btn" id="submit-btn" disabled>
+              Analisis Telur
+            </button>
+          </form>
+        </div>
+
+        <div class="results-section">
+          <h2>Hasil Analisis</h2>
+          <div class="result-card">
+            {% if prediction %}
+            <table class="result-table">
+              <tr>
+                <th>Parameter</th>
+                <th>Hasil</th>
+              </tr>
+              <tr>
+                <td>Status</td>
+                <td>
+                  <span
+                    class="status {% if prediction == 'fertile' %}fertile{% elif prediction == 'infertile' %}infertile{% else %}dead{% endif %}"
+                  >
+                    {{ prediction|capitalize }}
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td>Tingkat Kepercayaan</td>
+                <td>{{ confidence }}</td>
+              </tr>
+              <tr>
+                <td>Waktu Analisis</td>
+                <td id="analysis-time">
+                  {{ analysis_time if analysis_time else '-' }}
+                </td>
+              </tr>
+            </table>
+            <div class="image-comparison">
+              <div class="image-container">
+                <img src="{{ image_path }}" alt="Telur yang Dianalisis" />
+                <p class="image-label">Gambar Telur Anda</p>
+              </div>
+            </div>
+            {% else %}
+            <p style="text-align: center; padding: 20px">
+              Belum ada hasil analisis. Silakan upload gambar telur terlebih
+              dahulu.
+            </p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <h2>Informasi Klasifikasi Telur</h2>
+        <div class="info-grid">
+          <div class="info-card">
+            <h3>Telur Fertile</h3>
+            <p>
+              Telur fertile adalah telur yang telah dibuahi dan berpotensi untuk
+              berkembang menjadi embrio. Telur ini ditandai dengan adanya bercak
+              kecil pada kuning telur yang dapat berkembang menjadi embrio jika
+              berada pada kondisi yang tepat.
+            </p>
+          </div>
+          <div class="info-card">
+            <h3>Telur Infertile</h3>
+            <p>
+              Telur infertile adalah telur yang tidak dibuahi sehingga tidak
+              akan berkembang menjadi embrio. Telur ini masih layak dikonsumsi
+              dan biasanya tidak memiliki bercak germinal pada kuning telurnya.
+            </p>
+          </div>
+          <div class="info-card">
+            <h3>Telur Dead</h3>
+            <p>
+              Telur dead mengacu pada telur yang pernah fertile namun embrio di
+              dalamnya telah mati atau berhenti berkembang. Telur ini biasanya
+              memiliki tanda-tanda kerusakan atau pembusukan.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        &copy; 2025 Aplikasi Pengecekan Kualitas Telur | Kelompok 20 Certan
+      </footer>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const fileInput = document.getElementById("file-input");
+        const previewImage = document.getElementById("preview-image");
+        const uploadArea = document.getElementById("upload-area");
+        const submitBtn = document.getElementById("submit-btn");
+
+        // Handle file selection
+        fileInput.addEventListener("change", function (e) {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+              previewImage.src = event.target.result;
+              previewImage.style.display = "block";
+              submitBtn.disabled = false;
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+
+        // Handle drag and drop
+        uploadArea.addEventListener("dragover", function (e) {
+          e.preventDefault();
+          uploadArea.style.backgroundColor = "#FFF";
+          uploadArea.style.borderColor = "#6B4226";
+        });
+
+        uploadArea.addEventListener("dragleave", function (e) {
+          e.preventDefault();
+          uploadArea.style.backgroundColor = "#FFFBF2";
+          uploadArea.style.borderColor = "#C19A6B";
+        });
+
+        uploadArea.addEventListener("drop", function (e) {
+          e.preventDefault();
+          uploadArea.style.backgroundColor = "#FFFBF2";
+          uploadArea.style.borderColor = "#C19A6B";
+
+          const dt = e.dataTransfer;
+          const file = dt.files[0];
+
+          if (file && file.type.startsWith("image/")) {
+            fileInput.files = dt.files;
+            const reader = new FileReader();
+            reader.onload = function (event) {
+              previewImage.src = event.target.result;
+              previewImage.style.display = "block";
+              submitBtn.disabled = false;
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+
+        // Add current timestamp for analysis time if result exists
+        const analysisTimeElement = document.getElementById("analysis-time");
+        if (analysisTimeElement && analysisTimeElement.textContent === "-") {
+          const now = new Date();
+          const formattedTime = now.toLocaleString("id-ID", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          });
+          analysisTimeElement.textContent = formattedTime;
+        }
+      });
+    </script>
+  </body>
+</html>
