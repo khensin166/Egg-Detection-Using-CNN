@@ -218,6 +218,26 @@
         color: #721c24;
       }
 
+      .status.not_egg {
+        background-color: #e2e3e5;
+        color: #383d41;
+      }
+
+      .alert-message {
+        background-color: #e2e3e5;
+        color: #383d41;
+        padding: 15px;
+        border-radius: var(--border-radius);
+        margin-bottom: 15px;
+        border-left: 5px solid #383d41;
+      }
+
+      .alert-message.warning {
+        background-color: #fff3cd;
+        color: #856404;
+        border-left-color: #ffc107;
+      }
+
       .image-comparison {
         display: flex;
         justify-content: space-between;
@@ -349,7 +369,17 @@
         <div class="results-section">
           <h2>Hasil Analisis</h2>
           <div class="result-card">
-            {% if prediction %}
+            {% if prediction %} {% if prediction == 'not_egg' %}
+            <div class="alert-message warning">
+              <i
+                class="fas fa-exclamation-triangle"
+                style="margin-right: 10px"
+              ></i>
+              Sepertinya gambar yang Anda unggah bukan telur. Silakan coba
+              unggah gambar telur untuk mendapatkan hasil analisis yang akurat.
+            </div>
+            {% endif %}
+
             <table class="result-table">
               <tr>
                 <th>Parameter</th>
@@ -358,10 +388,11 @@
               <tr>
                 <td>Status</td>
                 <td>
-                  <span
-                    class="status {% if prediction == 'fertile' %}fertile{% elif prediction == 'infertile' %}infertile{% else %}dead{% endif %}"
-                  >
-                    {{ prediction|capitalize }}
+                  <span class="status {{ prediction }}">
+                    {% if prediction == 'fertile' %} Fertile {% elif prediction
+                    == 'infertile' %} Infertile {% elif prediction == 'dead' %}
+                    Dead {% elif prediction == 'not_egg' %} Bukan Telur {% endif
+                    %}
                   </span>
                 </td>
               </tr>
@@ -378,8 +409,8 @@
             </table>
             <div class="image-comparison">
               <div class="image-container">
-                <img src="{{ image_path }}" alt="Telur yang Dianalisis" />
-                <p class="image-label">Gambar Telur Anda</p>
+                <img src="{{ image_path }}" alt="Gambar yang Dianalisis" />
+                <p class="image-label">Gambar yang Dianalisis</p>
               </div>
             </div>
             {% else %}
@@ -418,6 +449,15 @@
               Telur dead mengacu pada telur yang pernah fertile namun embrio di
               dalamnya telah mati atau berhenti berkembang. Telur ini biasanya
               memiliki tanda-tanda kerusakan atau pembusukan.
+            </p>
+          </div>
+          <div class="info-card">
+            <h3>Bukan Telur</h3>
+            <p>
+              Kategori ini menunjukkan bahwa objek dalam gambar yang dianalisis
+              tidak dikenali sebagai telur. Sistem ini dilatih khusus untuk
+              mengenali telur ayam dan variasinya, jadi objek lain akan
+              dikategorikan sebagai "Bukan Telur".
             </p>
           </div>
         </div>
